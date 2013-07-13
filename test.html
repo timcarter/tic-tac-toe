@@ -20,13 +20,6 @@
 				overflow:hidden;
 			}
 
-			a.cell {
-				text-align:center;
-				text-decoration:none;
-				color:#000;
-				font-size:100%;
-			}
-
 			#misc {
 				min-height:1em;
 				background:#000;
@@ -61,6 +54,18 @@
 				animation: hint 1s ease 1s infinite alternate;
 				-webkit-animation: hint 1s ease 1s infinite alternate;
 				-moz-animation: hint 1s ease 1s infinite alternate;
+			}
+
+			#restart {
+				-webkit-transform:translateZ(0);
+				-moz-transform:translateZ(0);
+				transform:translateZ(0);
+			}
+
+			#winColumn.change, #lossColumn.change, #drawColumn.change {
+				animation: hint 500ms ease 500ms 6 alternate;
+				-webkit-animation: hint 500ms ease 500ms 6 alternate;
+				-moz-animation: hint 500ms ease 500ms 6 alternate;
 			}
 
 			@-webkit-keyframes hint {
@@ -167,6 +172,11 @@
 				font-size:33vh;
 				text-align:center;
 				cursor:pointer;
+				text-decoration:none;
+				color:#000;
+				-webkit-transform:translateZ(0);
+				-moz-transform:translateZ(0);
+				transform:translateZ(0);
 			}
 
 			.xwin {
@@ -436,6 +446,8 @@
 						$('#winColumn').html(humanWins);
 						$('#lossColumn').html(computerWins);
 						$('#drawColumn').html(draws);
+
+						$('#' + (victor === 'human' ? 'win' : victor === 'computer' ? 'loss' : 'draw') + 'Column').addClass('change');
 					},
 					playGame = function() {
 						setPlaying(true);
@@ -461,7 +473,7 @@
 					checkForTermination = function() {
 						var outcome = getOutcome(gameString);
 						if (outcome === 'draw') {
-							alert('it\'s a draw!');
+							$('#restart').addClass('again');
 						}
 						else if (outcome) {
 							var coordinates = outcome[1];
@@ -483,11 +495,15 @@
 						return true;
 					},
 					initialize = function() {
-						gameString = '---------';
 						setPlaying(false);
+						gameString = '---------';
+						$('.cell').unbind('click mouseenter mouseleave');
 						updateStats();
 						checkSettings();
 
+						$('#winColumn').removeClass('change');
+						$('#lossColumn').removeClass('change');
+						$('#drawColumn').removeClass('change');
 						$('.cell').removeClass('x').removeClass('o').removeClass('owin').removeClass('xwin');
 						$('#restart').removeClass('again');
 
@@ -501,13 +517,19 @@
 						computer = computerCharacter;
 					},
 					checkSettings = function() {
-						var isChecked = $('#character').is(':checked');
-						setCharacters(isChecked ? 'x' : 'o', isChecked ? 'o' : 'x');
+						if (!playing) {
+							var isChecked = $('#character').is(':checked');
+							setCharacters(isChecked ? 'x' : 'o', isChecked ? 'o' : 'x');
+						}
 					}
 				;
 
 				$('#restart').click(function() {initialize()});
-				$('#character').change(function() {checkSettings()});
+				$('#character').change(function() {
+					// re-start
+					if (gameString === '---------')
+						initialize();
+				});
 
 				initialize();
 			});
