@@ -108,11 +108,11 @@
 				display:inline-block;
 			}
 
-			#misc > *:before {
+			#misc > *:before, #aboutClose:before {
 				content:'[';
 			}
 
-			#misc > *:after {
+			#misc > *:after, #aboutClose:after {
 				content:']';
 			}
 
@@ -126,6 +126,31 @@
 
 			#about {
 				text-align:right;
+			}
+
+			#aboutContent {
+				height:0;
+				background:rgba(0, 0, 0, 0.8);
+				color:#fff;
+				-webkit-transition: height 2s;
+				-moz-transition: height 2s;
+				transition: height 2s;
+				overflow:hidden;
+				position:absolute;
+				width:100%;
+				z-index:1;
+				text-align:center;
+			}
+
+			#aboutContent > p {
+				padding:0 1em;
+				text-align:left;
+			}
+
+			#aboutClose {
+				position:absolute;
+				bottom:.5em;
+				color:#fff;
 			}
 
 			#board {
@@ -307,6 +332,10 @@
 			<span id="stats"><strong>stats:</strong> wins (<span id="winColumn"></span>) | losses (<span id="lossColumn"></span>) | draws (<span id="drawColumn"></span>)</span>
 			<span id="about"><a href="javascript://" id="aboutButton">about</a></span>
 		</div>
+		<div id="aboutContent">
+			<p>there is no cow level</p>
+			<a href="javascript://" id="aboutClose">close</a>
+		</div>
 		<div id="board">
 			<div class="row">
 				<div class="cell" id="c0"></div>
@@ -454,11 +483,13 @@
 						checkSettings();
 
 						$('.cell').click(function() {
-							$(this).removeClass('preview' + human).toggleClass(human);
-							updateGameString(+$(this).attr('id').substring(1), human);
+							if (gameString[$(this).attr('id').replace('c', '')] === '-') {
+								$(this).removeClass('preview' + human).toggleClass(human);
+								updateGameString(+$(this).attr('id').substring(1), human);
 
-							if (!checkForTermination())
-								move();
+								if (!checkForTermination())
+									move();
+							}
 						}).hover(
 							function() {
 								!$(this).is('.x, .o') && $(this).addClass('preview' + human);
@@ -472,27 +503,33 @@
 					},
 					checkForTermination = function() {
 						var outcome = getOutcome(gameString);
-						if (outcome === 'draw') {
-							$('#restart').addClass('again');
-						}
-						else if (outcome) {
+						if (outcome) {
 							var coordinates = outcome[1];
 
-							$('#c' + coordinates[0] + ', #c' + coordinates[1] + ', #c' + coordinates[2]).one(
+							(
+								outcome === 'draw' ?
+									$('.cell') :
+									$('#c' + coordinates[0] + ', #c' + coordinates[1] + ', #c' + coordinates[2])
+							).one(
 								'webkitAnimationEnd oanimationend msAnimationEnd animationend',
 								function() {
 									if (!playing) $('#restart').addClass('again');
 								}
-							).addClass(outcome[0] + 'win');
+							).addClass(
+								outcome === 'draw' ?
+									function() { return $(this).hasClass('x') ? 'xwin' : 'owin' } :
+									outcome[0] + 'win'
+							);
+
+							updateStats(outcome[0] === human ? 'human' : outcome[0] === computer ? 'computer' : 'none');
+
+							// move this elsewhere
+							$('.cell').unbind('click mouseenter mouseleave');
+							setPlaying(false);
+							return true;
 						}
-						else return false;
 
-						updateStats(outcome[0] === human ? 'human' : outcome[0] === computer ? 'computer' : 'none');
-
-						// move this elsewhere
-						$('.cell').unbind('click mouseenter mouseleave');
-						setPlaying(false);
-						return true;
+						return false;
 					},
 					initialize = function() {
 						setPlaying(false);
@@ -521,6 +558,9 @@
 							var isChecked = $('#character').is(':checked');
 							setCharacters(isChecked ? 'x' : 'o', isChecked ? 'o' : 'x');
 						}
+					},
+					showAboutScreen = function(val) {
+						$('#aboutContent').height(val ? 'calc(100% - 1em)' : 0)
 					}
 				;
 
@@ -530,6 +570,8 @@
 					if (gameString === '---------')
 						initialize();
 				});
+				$('#aboutButton').click(function() {showAboutScreen(true)});
+				$('#aboutClose').click(function() {showAboutScreen(false)});
 
 				initialize();
 			});
