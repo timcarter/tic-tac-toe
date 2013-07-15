@@ -30,34 +30,7 @@
 				width:100%;
 				background:#000;
 				color:#fff;
-
-				display: -webkit-box;
-				display: -ms-flexbox;
-				display: -webkit-flex;
-				display: -moz-flex;
-				display: flex;
-				display: -moz-box;
-
-				-webkit-box-align: center;
-				-moz-box-align: center;
-				-ms-align-items:center;
-				-webkit-align-items: center;
-				box-align: center;
-				align-items: center;
-
-				-webkit-box-pack: center;
-				-moz-box-pack: center;
-				-ms-flex-pack:center;
-				-webkit-justify-content:center;
-				box-pack: center;
-				justify-content:center;
-
-				-webkit-box-orient: horizontal;
-				-moz-box-orient: horizontal;
-				box-orient: horizontal;
-				-webkit-flex-flow:row;
-				flex-flow:row;
-
+				text-align:center;
 			}
 
 			#misc a {
@@ -196,69 +169,17 @@
 
 			#board {
 				width:100%;
-
-				display: -webkit-box;
-				display: -webkit-flex;
-				display: -ms-flexbox;
-				display: -moz-flex;
-				display: flex;
-				display: -moz-box;
-
-				-webkit-box-align: center;
-				-moz-box-align: center;
-				-ms-align-items:center;
-				-webkit-align-items: center;
-				box-align: center;
-				align-items: center;
-
-				-webkit-box-pack: center;
-				-moz-box-pack: center;
-				-ms-flex-pack:center;
-				-webkit-justify-content:center;
-				box-pack: center;
-				justify-content:center;
-
-				-webkit-box-orient:vertical;
-				-moz-box-orient:vertical;
-				box-orient: vertical;
-				-webkit-flex-flow:column;
-				flex-flow:column;
 			}
 
 			.row {
 				width:100%;
-
-				display: -webkit-box;
-				display: -ms-flexbox;
-				display: -webkit-flex;
-				display: -moz-flex;
-				display: flex;
-				display: -moz-box;
-
-				-webkit-box-align: center;
-				-moz-box-align: center;
-				-ms-align-items:center;
-				-webkit-align-items: center;
-				box-align: center;
-				align-items: center;
-
-				-webkit-box-pack: center;
-				-moz-box-pack: center;
-				-ms-flex-pack:center;
-				-webkit-justify-content:center;
-				box-pack: center;
-				justify-content:center;
-
-				-webkit-box-orient: horizontal;
-				-moz-box-orient: horizontal;
-				box-orient: horizontal;
-				-webkit-flex-flow:row;
-				flex-flow:row;
+				height:33%;
+				position:relative;
 			}
 
 			.cell {
 				width:33.3%;
-				height:33.3%;
+				height:100%;
 				line-height:100%;
 				font-size:4em;
 				text-align:center;
@@ -270,6 +191,10 @@
 				-o-transform:translateZ(0);
 				-ms-transform:translateZ(0);
 				transform:translateZ(0);
+				overflow:hidden;
+
+				position:absolute;
+				top:0;
 			}
 
 			.xwin {
@@ -356,17 +281,25 @@
 				}
 			}
 
-			#c0, #c1, #c2 {
+			#c0, #c3, #c6 {
+				left:0;
+			}
+
+			#c1, #c4, #c7 {
+				left:33.3%;
+			}
+
+			#c2, #c5, #c8 {
+				right:0;
+			}
+
+			.row:nth-child(2) {
+				border-top:3px solid #000;
 				border-bottom:3px solid #000;
 			}
 
-			#c4, #c1, #c7 {
+			#c4, #c1, #c7, #c2, #c5, #c8 {
 				border-left:3px solid #000;
-				border-right:3px solid #000;
-			}
-
-			#c6, #c7, #c8 {
-				border-top:3px solid #000;
 			}
 
 			.x {
@@ -603,7 +536,6 @@
 						updateStats();
 						setX($('#character').is(':checked') ? 'human' : 'computer')
 
-						$('body').scrollTop() || $(window).scrollTop(0, 1); // for mobile mostly
 						$('.cell').unbind('click mouseenter mouseleave');
 						$('#winColumn').removeClass('change');
 						$('#lossColumn').removeClass('change');
@@ -653,9 +585,6 @@
 						;
 
 						$('#board').width(window.innerWidth).height(window.innerHeight - $('#misc').height());
-
-						$('.row').height(thirdHeight).width(width);
-						$('.cell').height(thirdHeight).width(thirdWidth);
 					}
 				;
 
